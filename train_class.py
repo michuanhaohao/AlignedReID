@@ -14,7 +14,7 @@ import torch.backends.cudnn as cudnn
 from torch.optim import lr_scheduler
 
 import models
-from util.losses import CrossEntropyLoss, DeepSupervision
+from util.losses import CrossEntropyLoss, DeepSupervision, CrossEntropyLabelSmooth
 from util import data_manager
 from util import transforms as T
 from util.dataset_loader import ImageDataset
@@ -45,6 +45,7 @@ parser.add_argument('--cuhk03-classic-split', action='store_true',
 parser.add_argument('--use-metric-cuhk03', action='store_true',
                     help="whether to use cuhk03-metric (default: False)")
 # Optimization options
+parser.add_argument('--labelsmooth', action='store_true', help="label smooth")
 parser.add_argument('--optim', type=str, default='adam', help="optimization algorithm (see optimizers.py)")
 parser.add_argument('--max-epoch', default=60, type=int,
                     help="maximum epochs to run")
@@ -250,8 +251,10 @@ def main():
     print("Initializing model: {}".format(args.arch))
     model = models.init_model(name=args.arch, num_classes=dataset.num_train_pids, loss={'softmax'}, use_gpu=use_gpu)
     print("Model size: {:.5f}M".format(sum(p.numel() for p in model.parameters())/1000000.0))
-
-    criterion = CrossEntropyLoss(use_gpu=use_gpu)
+    if args.labelsmooth:
+        criterion = CrossEntropyLabelSmooth(num_classes=dataset.num_train_pids, use_gpu=use_gpu)
+    else:
+        criterion = CrossEntropyLoss(use_gpu=use_gpu)
     optimizer = init_optim(args.optim, model.parameters(), args.lr, args.weight_decay)
 
     if args.stepsize > 0:
