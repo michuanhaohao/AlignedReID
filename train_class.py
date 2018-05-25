@@ -167,16 +167,16 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
               torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
     distmat.addmm_(1, -2, qf, gf.t())
     distmat = distmat.numpy()
-    #
-    # print("Computing CMC and mAP")
-    # cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
-    #
-    # print("Results ----------")
-    # print("mAP: {:.1%}".format(mAP))
-    # print("CMC curve")
-    # for r in ranks:
-    #     print("Rank-{:<3}: {:.1%}".format(r, cmc[r - 1]))
-    # print("------------------")
+
+    print("Computing CMC and mAP")
+    cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
+
+    print("Results ----------")
+    print("mAP: {:.1%}".format(mAP))
+    print("CMC curve")
+    for r in ranks:
+        print("Rank-{:<3}: {:.1%}".format(r, cmc[r - 1]))
+    print("------------------")
 
     if args.reranking:
         from util.re_ranking import re_ranking
