@@ -319,7 +319,7 @@ class DualPathBlock(nn.Module):
 class DPN(nn.Module):
     def __init__(self, num_classes, small=False, num_init_features=64, k_r=96, groups=32,
                  b=False, k_sec=(3, 4, 20, 3), inc_sec=(16, 32, 24, 128),
-                 test_time_pool=True, loss={'xent'}, **kwargs):
+                 test_time_pool=True, loss={'softmax'}, **kwargs):
         super(DPN, self).__init__()
         self.loss = loss
         self.test_time_pool = test_time_pool
@@ -415,13 +415,11 @@ class DPN(nn.Module):
 
         y = self.classifier(f)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, f
-        elif self.loss == {'cent'}:
-            return y, f
-        elif self.loss == {'ring'}:
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
             return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

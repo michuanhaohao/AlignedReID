@@ -8,7 +8,7 @@ import torchvision
 __all__ = ['ResNet50', 'ResNet101', 'ResNet50M']
 
 class ResNet50(nn.Module):
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(ResNet50, self).__init__()
         self.loss = loss
         resnet50 = torchvision.models.resnet50(pretrained=True)
@@ -24,19 +24,17 @@ class ResNet50(nn.Module):
             return f
         y = self.classifier(f)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, f
-        elif self.loss == {'cent'}:
-            return y, f
-        elif self.loss == {'ring'}:
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
             return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))
 
 class ResNet101(nn.Module):
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(ResNet101, self).__init__()
         self.loss = loss
         resnet101 = torchvision.models.resnet101(pretrained=True)
@@ -52,13 +50,11 @@ class ResNet101(nn.Module):
             return f
         y = self.classifier(f)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, f
-        elif self.loss == {'cent'}:
-            return y, f
-        elif self.loss == {'ring'}:
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
             return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))
@@ -70,7 +66,7 @@ class ResNet50M(nn.Module):
     Yu et al. The Devil is in the Middle: Exploiting Mid-level Representations for
     Cross-Domain Instance Matching. arXiv:1711.08106.
     """
-    def __init__(self, num_classes=0, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes=0, loss={'softmax'}, **kwargs):
         super(ResNet50M, self).__init__()
         self.loss = loss
         resnet50 = torchvision.models.resnet50(pretrained=True)
@@ -107,13 +103,11 @@ class ResNet50M(nn.Module):
             return combofeat
         prelogits = self.classifier(combofeat)
         
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return prelogits
-        elif self.loss == {'xent', 'htri'}:
+        elif self.loss == {'softmax', 'metric'}:
             return prelogits, combofeat
-        elif self.loss == {'cent'}:
-            return prelogits, combofeat
-        elif self.loss == {'ring'}:
-            return prelogits, combofeat
+        elif self.loss == {'metric'}:
+            return combofeat
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

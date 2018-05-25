@@ -268,7 +268,7 @@ def inceptionresnetv2(num_classes=1000, pretrained='imagenet'):
 ##################### Model Definition #########################
 
 class InceptionResNetV2(nn.Module):
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(InceptionResNetV2, self).__init__()
         self.loss = loss
         # Modules
@@ -371,13 +371,11 @@ class InceptionResNetV2(nn.Module):
 
         y = self.classifier(x)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, x
-        elif self.loss == {'cent'}:
-            return y, x
-        elif self.loss == {'ring'}:
+        elif self.loss == {'metric'}:
+            return x
+        elif self.loss == {'softmax', 'metric'}:
             return y, x
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

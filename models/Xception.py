@@ -163,7 +163,7 @@ class Xception(nn.Module):
     Reference:
     Chollet. Xception: Deep Learning with Depthwise Separable Convolutions. CVPR 2017.
     """
-    def __init__(self, num_classes, loss={'xent'}, num_mid_flows=8, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, num_mid_flows=8, **kwargs):
         super(Xception, self).__init__()
         self.loss = loss
 
@@ -183,9 +183,12 @@ class Xception(nn.Module):
 
         y = self.classifier(x)
 
-        if self.loss == {'xent'}:
+
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
+        elif self.loss == {'metric'}:
+            return x
+        elif self.loss == {'softmax', 'metric'}:
             return y, x
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

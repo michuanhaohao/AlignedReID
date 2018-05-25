@@ -55,7 +55,7 @@ class MobileNetV2(nn.Module):
     Reference:
     Sandler et al. MobileNetV2: Inverted Residuals and Linear Bottlenecks. CVPR 2018.
     """
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(MobileNetV2, self).__init__()
         self.loss = loss
 
@@ -109,9 +109,11 @@ class MobileNetV2(nn.Module):
 
         y = self.classifier(x)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
+        elif self.loss == {'metric'}:
+            return x
+        elif self.loss == {'softmax', 'metric'}:
             return y, x
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

@@ -142,7 +142,7 @@ class MuDeep(nn.Module):
     Reference:
     Qian et al. Multi-scale Deep Learning Architectures for Person Re-identification. ICCV 2017.
     """
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(MuDeep, self).__init__()
         self.loss = loss
 
@@ -174,11 +174,11 @@ class MuDeep(nn.Module):
         x = self.fc(x)
         y = self.classifier(x)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, x
-        elif self.loss == {'cent'}:
-            return y, x
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
+            return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

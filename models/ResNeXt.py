@@ -1448,7 +1448,7 @@ class ResNeXt101_32x4d(nn.Module):
 
 class ResNeXt101_64x4d(nn.Module):
     """This model is not used"""
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(ResNeXt101_64x4d, self).__init__()
         self.loss = loss
         self.features = resnext101_64x4d_features
@@ -1477,13 +1477,11 @@ class ResNeXt101_64x4d(nn.Module):
         y = self.classifier(x)
         print y.size()
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, x
-        elif self.loss == {'cent'}:
-            return y, x
-        elif self.loss == {'ring'}:
-            return y, x
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
+            return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

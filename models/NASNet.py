@@ -633,13 +633,11 @@ class NASNetAMobile(nn.Module):
 
         y = self.classifier(f)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, f
-        elif self.loss == {'cent'}:
-            return y, f
-        elif self.loss == {'ring'}:
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
             return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

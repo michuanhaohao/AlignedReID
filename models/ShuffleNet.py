@@ -67,7 +67,7 @@ class ShuffleNet(nn.Module):
     Zhang et al. ShuffleNet: An Extremely Efficient Convolutional Neural
     Network for Mobile Devices. CVPR 2018.
     """
-    def __init__(self, num_classes, loss={'xent'}, num_groups=3, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, num_groups=3, **kwargs):
         super(ShuffleNet, self).__init__()
         self.loss = loss
 
@@ -118,9 +118,12 @@ class ShuffleNet(nn.Module):
 
         y = self.classifier(x)
 
-        if self.loss == {'xent'}:
+
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
+        elif self.loss == {'metric'}:
+            return x
+        elif self.loss == {'softmax', 'metric'}:
             return y, x
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

@@ -341,7 +341,7 @@ def inceptionv4(num_classes=1000, pretrained='imagenet'):
     return model
 
 class InceptionV4ReID(nn.Module):
-    def __init__(self, num_classes, loss={'xent'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
         super(InceptionV4ReID, self).__init__()
         self.loss = loss
         base = inceptionv4()
@@ -357,13 +357,11 @@ class InceptionV4ReID(nn.Module):
             return f
         y = self.classifier(f)
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return y
-        elif self.loss == {'xent', 'htri'}:
-            return y, f
-        elif self.loss == {'cent'}:
-            return y, f
-        elif self.loss == {'ring'}:
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
             return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

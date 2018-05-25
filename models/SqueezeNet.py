@@ -65,7 +65,7 @@ class SqueezeNet(nn.Module):
     Iandola et al. SqueezeNet: AlexNet-level accuracy with 50x fewer parameters
     and< 0.5 MB model size. arXiv:1602.07360.
     """
-    def __init__(self, num_classes, loss={'xent'}, bypass=True, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, bypass=True, **kwargs):
         super(SqueezeNet, self).__init__()
         self.loss = loss
         self.bypass = bypass
@@ -111,9 +111,11 @@ class SqueezeNet(nn.Module):
         if not self.training:
             return f
 
-        if self.loss == {'xent'}:
+        if self.loss == {'softmax'}:
             return f
-        elif self.loss == {'xent', 'htri'}:
+        elif self.loss == {'metric'}:
+            return f
+        elif self.loss == {'softmax', 'metric'}:
             return f, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))
