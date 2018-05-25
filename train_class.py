@@ -74,6 +74,7 @@ parser.add_argument('--start-eval', type=int, default=0, help="start to evaluate
 parser.add_argument('--save-dir', type=str, default='log')
 parser.add_argument('--use-cpu', action='store_true', help="use cpu")
 parser.add_argument('--gpu-devices', default='0', type=str, help='gpu device ids for CUDA_VISIBLE_DEVICES')
+parser.add_argument('--reranking',action= 'store_true', help= 'result re_ranking')
 
 args = parser.parse_args()
 
@@ -166,17 +167,29 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
               torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
     distmat.addmm_(1, -2, qf, gf.t())
     distmat = distmat.numpy()
+    #
+    # print("Computing CMC and mAP")
+    # cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
+    #
+    # print("Results ----------")
+    # print("mAP: {:.1%}".format(mAP))
+    # print("CMC curve")
+    # for r in ranks:
+    #     print("Rank-{:<3}: {:.1%}".format(r, cmc[r - 1]))
+    # print("------------------")
 
-    print("Computing CMC and mAP")
-    cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
+    if args.reranking:
+        from util.re_ranking import re_ranking
+        distmat = re_ranking(qf,gf,k1=20, k2=6, lambda_value=0.3)
+        print("Computing CMC and mAP for re_ranking")
+        cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
 
-    print("Results ----------")
-    print("mAP: {:.1%}".format(mAP))
-    print("CMC curve")
-    for r in ranks:
-        print("Rank-{:<3}: {:.1%}".format(r, cmc[r - 1]))
-    print("------------------")
-
+        print("Results ----------")
+        print("mAP(RK): {:.1%}".format(mAP))
+        print("CMC curve(RK)")
+        for r in ranks:
+            print("Rank-{:<3}: {:.1%}".format(r, cmc[r - 1]))
+        print("------------------")
     return cmc[0]
 
 def main():

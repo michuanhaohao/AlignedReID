@@ -13,4 +13,17 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 #### Market1501
 | Model | Param Size (M) | Loss | Rank-1/5/10 (%) | mAP (%) | RK:Rank-1/5/10 (%) | RK:mAP (%) | 
 | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Resnet50 | 25.05 | softmax | 81.2/92.2/94.6 | 64.2 |-|-| 
+| Resnet50 | 25.05 | softmax | 81.2/92.2/94.6 | 64.2 |83.4/90.7/93/2|76.4|
+
+# Train
+```bash
+python train_class.py  -d market1501 -a resnet50 
+```
+
+**Note:** You can add your experimental settings for 'args'
+# Test
+```bash
+python train_img_model_xent.py -d market1501 -a resnet50 --evaluate --resume saved-models/best_model.pth.tar --save-dir log/resnet50-market1501 (--reranking)
+```
+
+**Note:** (--reranking) means whether you use 'Re-ranking with k-reciprocal Encoding (CVPR2017)' to boost the performance.
