@@ -9,3 +9,8 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
   year={2017}
 }
 ```
+
+#### Market1501
+| Model | Param Size (M) | Loss | Rank-1/5/10 (%) | mAP (%) | RK:Rank-1/5/10 (%) | RK:mAP (%) | 
+| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| Resnet50 | 25.05 | softmax | 81.2/92.2/94.6 | 64.2 |-|-| 
