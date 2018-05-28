@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-import os
 import sys
 import time
 import datetime
@@ -22,6 +21,8 @@ from util.utils import Logger
 from util.utils import AverageMeter, Logger, save_checkpoint
 from util.eval_metrics import evaluate
 from util.optimizers import init_optim
+from util.samplers import RandomIdentitySampler
+
 
 
 parser = argparse.ArgumentParser(description='Train image model with cross entropy loss and triplet hard loss')
@@ -46,16 +47,16 @@ parser.add_argument('--use-metric-cuhk03', action='store_true',
 # Optimization options
 parser.add_argument('--labelsmooth', action='store_true', help="label smooth")
 parser.add_argument('--optim', type=str, default='adam', help="optimization algorithm (see optimizers.py)")
-parser.add_argument('--max-epoch', default=60, type=int,
+parser.add_argument('--max-epoch', default=180, type=int,
                     help="maximum epochs to run")
 parser.add_argument('--start-epoch', default=0, type=int,
                     help="manual epoch number (useful on restarts)")
-parser.add_argument('--train-batch', default=128, type=int,
+parser.add_argument('--train-batch', default=32, type=int,
                     help="train batch size")
-parser.add_argument('--test-batch', default=128, type=int, help="test batch size")
+parser.add_argument('--test-batch', default=32, type=int, help="test batch size")
 parser.add_argument('--lr', '--learning-rate', default=0.0003, type=float,
                     help="initial learning rate")
-parser.add_argument('--stepsize', default=20, type=int,
+parser.add_argument('--stepsize', default=60, type=int,
                     help="stepsize to decay learning rate (>0 means this is enabled)")
 parser.add_argument('--gamma', default=0.1, type=float,
                     help="learning rate decay")
@@ -123,7 +124,8 @@ def main():
 
     trainloader = DataLoader(
         ImageDataset(dataset.train, transform=transform_train),
-        batch_size=args.train_batch, shuffle=True, num_workers=args.workers,
+        sampler=RandomIdentitySampler(dataset.train, num_instances=args.num_instances),
+        batch_size=args.train_batch, num_workers=args.workers,
         pin_memory=pin_memory, drop_last=True,
     )
 
@@ -221,7 +223,6 @@ def train(epoch, model, criterion_class, criterion_metric, optimizer, trainloade
 
         # measure data loading time
         data_time.update(time.time() - end)
-
         outputs, features = model(imgs)
         if args.htri_only:
             if isinstance(features, tuple):
@@ -304,7 +305,9 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
         print("Extracted features for gallery set, obtained {}-by-{} matrix".format(gf.size(0), gf.size(1)))
 
     print("==> BatchTime(s)/BatchSize(img): {:.3f}/{}".format(batch_time.avg, args.test_batch))
-
+    # feature normlization
+    qf = 1. * qf / (torch.norm(qf, 2, dim = -1, keepdim=True).expand_as(qf) + 1e-12)
+    gf = 1. * gf / (torch.norm(gf, 2, dim = -1, keepdim=True).expand_as(gf) + 1e-12)
     m, n = qf.size(0), gf.size(0)
     distmat = torch.pow(qf, 2).sum(dim=1, keepdim=True).expand(m, n) + \
               torch.pow(gf, 2).sum(dim=1, keepdim=True).expand(n, m).t()
