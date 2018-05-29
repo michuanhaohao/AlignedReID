@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-import sys
+from aligned.local_dist import *
 
 import torch
 from torch import nn
@@ -116,6 +116,49 @@ class TripletLoss(nn.Module):
         y = torch.ones_like(dist_an)
         loss = self.ranking_loss(dist_an, dist_ap, y)
         return loss
+
+class TripletLossAlignedReID(nn.Module):
+    """Triplet loss with hard positive/negative mining.
+
+    Reference:
+    Hermans et al. In Defense of the Triplet Loss for Person Re-Identification. arXiv:1703.07737.
+
+    Code imported from https://github.com/Cysu/open-reid/blob/master/reid/loss/triplet.py.
+
+    Args:
+        margin (float): margin for triplet.
+    """
+    def __init__(self, margin=0.3):
+        super(TripletLossAlignedReID, self).__init__()
+        self.margin = margin
+        self.ranking_loss = nn.MarginRankingLoss(margin=margin)
+        self.ranking_loss_local = nn.MarginRankingLoss(margin=margin)
+
+    def forward(self, inputs, targets, local_features):
+        """
+        Args:
+            inputs: feature matrix with shape (batch_size, feat_dim)
+            targets: ground truth labels with shape (num_classes)
+        """
+        n = inputs.size(0)
+        #inputs = 1. * inputs / (torch.norm(inputs, 2, dim=-1, keepdim=True).expand_as(inputs) + 1e-12)
+        # Compute pairwise distance, replace by the official when merged
+        dist = torch.pow(inputs, 2).sum(dim=1, keepdim=True).expand(n, n)
+        dist = dist + dist.t()
+        dist.addmm_(1, -2, inputs, inputs.t())
+        dist = dist.clamp(min=1e-12).sqrt()  # for numerical stability
+        # For each anchor, find the hardest positive and negative
+        dist_ap,dist_an,p_inds,n_inds = hard_example_mining(dist,targets,return_inds=True)
+        local_features = local_features.permute(0,2,1)
+        p_local_features = local_features[p_inds]
+        n_local_features = local_features[n_inds]
+        local_dist_ap = batch_local_dist(local_features, p_local_features)
+        local_dist_an = batch_local_dist(local_features, n_local_features)
+        # Compute ranking hinge loss
+        y = torch.ones_like(dist_an)
+        global_loss = self.ranking_loss(dist_an, dist_ap, y)
+        local_loss = self.ranking_loss_local(local_dist_an,local_dist_ap, y)
+        return global_loss,local_loss
 
 class CenterLoss(nn.Module):
     """Center loss.

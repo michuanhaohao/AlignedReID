@@ -16,9 +16,13 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 | Resnet50 | 25.05 | softmax | 81.2/92.2/94.6 | 64.2 |83.4/90.7/93/2|76.4|
 | Resnet50 | 25.05 | softmax+label smooth | 82.6/92.3/95.1 | 64.4 |84.0/90.9/93.4|76.8|
 | Resnet50 | 25.05 | softmax+trihard | 86.4/95.5/97.2 | 70.9 |88.5/94.1/95.7|83.3|
+| Resnet50 | 25.05 | AlignedReID | 87.5/95.8/97.2 | 72.5 |89.0/94.7/96.1|84.7|
 # Train
 ```bash
 python train_class.py  -d market1501 -a resnet50 
+```
+```bash
+python train_alignedreid.py  -d market1501 -a resnet50 --aligned
 ```
 
 **Note:** You can add your experimental settings for 'args'
