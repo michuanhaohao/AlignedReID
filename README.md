@@ -17,6 +17,28 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 | Resnet50 | 25.05 | softmax+label smooth | 82.6/92.3/95.1 | 64.4 |84.0/90.9/93.4|76.8|
 | Resnet50 | 25.05 | softmax+trihard | 86.4/95.5/97.2 | 70.9 |88.5/94.1/95.7|83.3|
 | Resnet50 | 25.05 | AlignedReID | 87.5/95.8/97.2 | 72.5 |89.0/94.7/96.1|84.7|
+| Resnet50 | 25.05 | AlignedReID+label smooth | 88.7/95.8/97.7 | 74.1 |90.3/94.8/96.3|85.8|
+
+# Prepare data
+Create a directory to store reid datasets under this repo via
+```bash
+cd AlignedReID/
+mkdir data/
+```
+
+If you wanna store datasets in another directory, you need to specify `--root path_to_your/data` when running the training code. Please follow the instructions below to prepare each dataset. After that, you can simply do `-d the_dataset` when running the training code. 
+
+**Market1501** :
+1. Download dataset to `data/` from http://www.liangzheng.org/Project/project_reid.html.
+2. Extract dataset and rename to `market1501`. The data structure would look like:
+```
+market1501/
+    bounding_box_test/
+    bounding_box_train/
+    ...
+```
+3. Use `-d market1501` when running the training code.
+
 # Train
 ```bash
 python train_class.py  -d market1501 -a resnet50 
