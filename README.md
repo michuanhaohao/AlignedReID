@@ -11,14 +11,14 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 ```
 
 #### Market1501
-| Model | Param Size (M) | Loss | Distance |Rank-1(%) | mAP (%) | RK:Rank-1(%) | RK:mAP (%) | 
-| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| Resnet50 | 25.05 | softmax                    | Global |81.2 | 64.2 |83.4|76.4|
-| Resnet50 | 25.05 | softmax+label smooth       | Global |82.6 | 64.4 |84.0|76.8|
-| Resnet50 | 25.05 | softmax+trihard            | Global |86.4 | 70.9 |88.5|83.3|
-| Resnet50 | 25.05 | AlignedReID                | Global |87.5 | 72.5 |89.0|84.7|
-| Resnet50 | 25.05 | AlignedReID                | Local  |87.5 | 71.9 |89.6|84.9|
-| Resnet50 | 25.05 | AlignedReID                | Global+Local  |88.4 | 73.2 |90.2|85.5|
+| Model | Param Size (M) | Loss | Distance |Rank-1/ mAP(%)| RK:Rank-1/ mAP (%) | 
+| --- | :---: | :---: | :---: | :---: | :---: |
+| Resnet50 | 25.05 | softmax                    | Global |81.2/64.2 |83.4/76.4|
+| Resnet50 | 25.05 | softmax+label smooth       | Global |82.6/64.4 |84.0/76.8|
+| Resnet50 | 25.05 | softmax+trihard            | Global |86.4/70.9 |88.5/83.3|
+| Resnet50 | 25.05 | AlignedReID                | Global |87.5/72.5 |89.0/84.7|
+| Resnet50 | 25.05 | AlignedReID                | Local  |87.5/71.9 |89.6/84.9|
+| Resnet50 | 25.05 | AlignedReID                | Global+Local  |88.4/73.2 |90.2/85.5|
 
 
 # Prepare data
