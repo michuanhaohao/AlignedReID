@@ -25,18 +25,22 @@ Minibatch: avaliable when 'MemorySave' is 'True'
 import numpy as np
 import torch
 
-def re_ranking(probFea, galFea, k1, k2, lambda_value):
-    # if feature vector is numpy, you shoudl use 'torch.tensor' transform it to tensor
+def re_ranking(probFea, galFea, k1, k2, lambda_value, local_distmat = None, only_local = False):
+    # if feature vector is numpy, you should use 'torch.tensor' transform it to tensor
     query_num = probFea.size(0)
     all_num = query_num + galFea.size(0)
-    feat = torch.cat([probFea,galFea])
-
-    print('using GPU to compute original distance')
-    distmat = torch.pow(feat,2).sum(dim=1, keepdim=True).expand(all_num,all_num) + \
-                  torch.pow(feat, 2).sum(dim=1, keepdim=True).expand(all_num, all_num).t()
-    distmat.addmm_(1,-2,feat,feat.t())
-    original_dist = distmat.numpy()
-    del feat
+    if only_local:
+        original_dist = local_distmat
+    else:
+        feat = torch.cat([probFea,galFea])
+        print('using GPU to compute original distance')
+        distmat = torch.pow(feat,2).sum(dim=1, keepdim=True).expand(all_num,all_num) + \
+                      torch.pow(feat, 2).sum(dim=1, keepdim=True).expand(all_num, all_num).t()
+        distmat.addmm_(1,-2,feat,feat.t())
+        original_dist = distmat.numpy()
+        del feat
+        if not local_distmat == None:
+            original_dist = original_dist + local_distmat
     gallery_num = original_dist.shape[0]
     original_dist = np.transpose(original_dist / np.max(original_dist, axis=0))
     V = np.zeros_like(original_dist).astype(np.float16)

@@ -11,13 +11,15 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 ```
 
 #### Market1501
-| Model | Param Size (M) | Loss | Rank-1/5/10 (%) | mAP (%) | RK:Rank-1/5/10 (%) | RK:mAP (%) | 
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| Resnet50 | 25.05 | softmax | 81.2/92.2/94.6 | 64.2 |83.4/90.7/93/2|76.4|
-| Resnet50 | 25.05 | softmax+label smooth | 82.6/92.3/95.1 | 64.4 |84.0/90.9/93.4|76.8|
-| Resnet50 | 25.05 | softmax+trihard | 86.4/95.5/97.2 | 70.9 |88.5/94.1/95.7|83.3|
-| Resnet50 | 25.05 | AlignedReID | 87.5/95.8/97.2 | 72.5 |89.0/94.7/96.1|84.7|
-| Resnet50 | 25.05 | AlignedReID+label smooth | 88.7/95.8/97.7 | 74.1 |90.3/94.8/96.3|85.8|
+| Model | Param Size (M) | Loss | Distance |Rank-1(%) | mAP (%) | RK:Rank-1(%) | RK:mAP (%) | 
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Resnet50 | 25.05 | softmax                    | Global |81.2 | 64.2 |83.4|76.4|
+| Resnet50 | 25.05 | softmax+label smooth       | Global |82.6 | 64.4 |84.0|76.8|
+| Resnet50 | 25.05 | softmax+trihard            | Global |86.4 | 70.9 |88.5|83.3|
+| Resnet50 | 25.05 | AlignedReID                | Global |87.5 | 72.5 |89.0|84.7|
+| Resnet50 | 25.05 | AlignedReID                | Local  |87.5 | 71.9 |89.6|84.9|
+| Resnet50 | 25.05 | AlignedReID                | Local  |88.4 | 73.2 |90.2|85.5|
+
 
 # Prepare data
 Create a directory to store reid datasets under this repo via
@@ -44,13 +46,13 @@ market1501/
 python train_class.py  -d market1501 -a resnet50 
 ```
 ```bash
-python train_alignedreid.py  -d market1501 -a resnet50 --aligned
+python train_alignedreid.py  -d market1501 -a resnet50 --test_distance global_local
 ```
 
 **Note:** You can add your experimental settings for 'args'
 # Test
 ```bash
-python train_img_model_xent.py -d market1501 -a resnet50 --evaluate --resume saved-models/best_model.pth.tar --save-dir log/resnet50-market1501 (--reranking)
+python train_alignedreid.py -d market1501 -a resnet50 --evaluate --resume saved-models/best_model.pth.tar --save-dir log/resnet50-market1501 --test_distance global_local (--reranking)
 ```
 
 **Note:** (--reranking) means whether you use 'Re-ranking with k-reciprocal Encoding (CVPR2017)' to boost the performance.

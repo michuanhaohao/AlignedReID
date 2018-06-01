@@ -37,6 +37,7 @@ class ResNet50(nn.Module):
         f = x.view(x.size(0), -1)
         #f = 1. * f / (torch.norm(f, 2, dim=-1, keepdim=True).expand_as(f) + 1e-12)
         if not self.training:
+            if self.aligned: return f,lf
             return f
         y = self.classifier(f)
         if self.loss == {'softmax'}:

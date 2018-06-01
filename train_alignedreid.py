@@ -83,7 +83,7 @@ parser.add_argument('--use_cpu', action='store_true', help="use cpu")
 parser.add_argument('--gpu-devices', default='0', type=str, help='gpu device ids for CUDA_VISIBLE_DEVICES')
 parser.add_argument('--reranking',action= 'store_true', help= 'result re_ranking')
 
-parser.add_argument('--aligned',action= 'store_true', help= 'AlignedReID')
+parser.add_argument('--test_distance',type = str, default='global', help= 'test distance type')
 
 args = parser.parse_args()
 
@@ -145,7 +145,7 @@ def main():
     )
 
     print("Initializing model: {}".format(args.arch))
-    model = models.init_model(name=args.arch, num_classes=dataset.num_train_pids, loss={'softmax','metric'}, aligned =args.aligned, use_gpu=use_gpu)
+    model = models.init_model(name=args.arch, num_classes=dataset.num_train_pids, loss={'softmax','metric'}, aligned =True, use_gpu=use_gpu)
     print("Model size: {:.5f}M".format(sum(p.numel() for p in model.parameters())/1000000.0))
     if args.labelsmooth:
         criterion_class = CrossEntropyLabelSmooth(num_classes=dataset.num_train_pids, use_gpu=use_gpu)
@@ -266,47 +266,54 @@ def train(epoch, model, criterion_class, criterion_metric, optimizer, trainloade
                   'LLoss {local_loss.val:.4f} ({local_loss.avg:.4f})\t'.format(
                    epoch+1, batch_idx+1, len(trainloader), batch_time=batch_time,data_time=data_time,
                    loss=losses,xent_loss=xent_losses, global_loss=global_losses, local_loss = local_losses))
-
+from IPython import embed
 def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
     batch_time = AverageMeter()
 
     model.eval()
 
     with torch.no_grad():
-        qf, q_pids, q_camids = [], [], []
+        qf, q_pids, q_camids, lqf = [], [], [], []
         for batch_idx, (imgs, pids, camids) in enumerate(queryloader):
             if use_gpu: imgs = imgs.cuda()
 
             end = time.time()
-            features = model(imgs)
+            features, local_features = model(imgs)
             batch_time.update(time.time() - end)
 
             features = features.data.cpu()
+            local_features = local_features.data.cpu()
             qf.append(features)
+            lqf.append(local_features)
             q_pids.extend(pids)
             q_camids.extend(camids)
         qf = torch.cat(qf, 0)
+        lqf = torch.cat(lqf,0)
         q_pids = np.asarray(q_pids)
         q_camids = np.asarray(q_camids)
 
         print("Extracted features for query set, obtained {}-by-{} matrix".format(qf.size(0), qf.size(1)))
 
-        gf, g_pids, g_camids = [], [], []
+        gf, g_pids, g_camids, lgf = [], [], [], []
         end = time.time()
         for batch_idx, (imgs, pids, camids) in enumerate(galleryloader):
             if use_gpu: imgs = imgs.cuda()
 
             end = time.time()
-            features = model(imgs)
+            features, local_features = model(imgs)
             batch_time.update(time.time() - end)
 
             features = features.data.cpu()
+            local_features = local_features.data.cpu()
             gf.append(features)
+            lgf.append(local_features)
             g_pids.extend(pids)
             g_camids.extend(camids)
         gf = torch.cat(gf, 0)
+        lgf = torch.cat(lgf,0)
         g_pids = np.asarray(g_pids)
         g_camids = np.asarray(g_camids)
+
 
         print("Extracted features for gallery set, obtained {}-by-{} matrix".format(gf.size(0), gf.size(1)))
 
@@ -320,6 +327,18 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
     distmat.addmm_(1, -2, qf, gf.t())
     distmat = distmat.numpy()
 
+    if not args.test_distance== 'global':
+        print("Only using global branch")
+        from util.distance import low_memory_local_dist
+        lqf = lqf.permute(0,2,1)
+        lgf = lgf.permute(0,2,1)
+        local_distmat = low_memory_local_dist(lqf.numpy(),lgf.numpy())
+        if args.test_distance== 'local':
+            print("Only using local branch")
+            distmat = local_distmat
+        if args.test_distance == 'global_local':
+            print("Using global and local branches")
+            distmat = local_distmat+distmat
     print("Computing CMC and mAP")
     cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
 
@@ -332,7 +351,22 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
 
     if args.reranking:
         from util.re_ranking import re_ranking
-        distmat = re_ranking(qf,gf,k1=20, k2=6, lambda_value=0.3)
+        if args.test_distance == 'global':
+            print("Only using global branch for reranking")
+            distmat = re_ranking(qf,gf,k1=20, k2=6, lambda_value=0.3)
+        else:
+            local_qq_distmat = low_memory_local_dist(lqf.numpy(), lqf.numpy())
+            local_gg_distmat = low_memory_local_dist(lgf.numpy(), lgf.numpy())
+            local_dist = np.concatenate(
+                [np.concatenate([local_qq_distmat, local_distmat], axis=1),
+                 np.concatenate([local_distmat.T, local_gg_distmat], axis=1)],
+                axis=0)
+            if args.test_distance == 'local':
+                print("Only using local branch for reranking")
+                distmat = re_ranking(qf,gf,k1=20,k2=6,lambda_value=0.3,local_distmat=local_dist,only_local=True)
+            elif args.test_distance == 'global_local':
+                print("Using global and local branches for reranking")
+                distmat = re_ranking(qf,gf,k1=20,k2=6,lambda_value=0.3,local_distmat=local_dist,only_local=False)
         print("Computing CMC and mAP for re_ranking")
         cmc, mAP = evaluate(distmat, q_pids, g_pids, q_camids, g_camids, use_metric_cuhk03=args.use_metric_cuhk03)
 
