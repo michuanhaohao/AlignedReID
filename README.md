@@ -18,7 +18,7 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 | Resnet50 | 25.05 | softmax+trihard            | Global |86.4 | 70.9 |88.5|83.3|
 | Resnet50 | 25.05 | AlignedReID                | Global |87.5 | 72.5 |89.0|84.7|
 | Resnet50 | 25.05 | AlignedReID                | Local  |87.5 | 71.9 |89.6|84.9|
-| Resnet50 | 25.05 | AlignedReID                | Local  |88.4 | 73.2 |90.2|85.5|
+| Resnet50 | 25.05 | AlignedReID                | Global+Local  |88.4 | 73.2 |90.2|85.5|
 
 
 # Prepare data
