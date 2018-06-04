@@ -10,7 +10,7 @@ Shorthands for loss:
 - TripletLoss: htri
 - CenterLoss: cent
 """
-__all__ = ['DeepSupervision', 'CrossEntropyLabelSmooth', 'TripletLoss', 'CenterLoss', 'RingLoss']
+__all__ = ['DeepSupervision', 'CrossEntropyLoss','CrossEntropyLabelSmooth', 'TripletLoss', 'CenterLoss', 'RingLoss']
 
 def DeepSupervision(criterion, xs, y):
     """
@@ -42,7 +42,6 @@ class CrossEntropyLoss(nn.Module):
         if self.use_gpu: targets = targets.cuda()
         loss = self.crossentropy_loss(inputs, targets)
         return loss
-
 
 class CrossEntropyLabelSmooth(nn.Module):
     """Cross entropy loss with label smoothing regularizer.
@@ -86,10 +85,11 @@ class TripletLoss(nn.Module):
     Args:
         margin (float): margin for triplet.
     """
-    def __init__(self, margin=0.3):
+    def __init__(self, margin=0.3, mutual_flag = False):
         super(TripletLoss, self).__init__()
         self.margin = margin
         self.ranking_loss = nn.MarginRankingLoss(margin=margin)
+        self.mutual = mutual_flag
 
     def forward(self, inputs, targets):
         """
@@ -115,6 +115,8 @@ class TripletLoss(nn.Module):
         # Compute ranking hinge loss
         y = torch.ones_like(dist_an)
         loss = self.ranking_loss(dist_an, dist_ap, y)
+        if self.mutual:
+            return loss, dist
         return loss
 
 class TripletLossAlignedReID(nn.Module):
@@ -221,6 +223,22 @@ class RingLoss(nn.Module):
     def forward(self, x):
         l = ((x.norm(p=2, dim=1) - self.radius)**2).mean()
         return l * self.weight_ring
+
+class KLMutualLoss(nn.Module):
+    def __init__(self):
+        super(KLMutualLoss,self).__init__()
+        self.kl_loss = nn.KLDivLoss()
+        self.log_softmax = nn.functional.log_softmax
+        self.softmax = nn.functional.softmax
+    def forward(self, pred1, pred2):
+        pred1 = self.log_softmax(pred1)
+        pred2 = self.softmax(pred2)
+        loss = self.kl_loss(pred1, torch.autograd.Variable(pred2.data))
+        loss = self.kl_loss(pred1, pred2.detach())
+        # from IPython import embed
+        # embed()
+        # print(loss)
+        return loss
 
 if __name__ == '__main__':
     pass
