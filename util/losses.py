@@ -130,11 +130,12 @@ class TripletLossAlignedReID(nn.Module):
     Args:
         margin (float): margin for triplet.
     """
-    def __init__(self, margin=0.3):
+    def __init__(self, margin=0.3, mutual_flag = False):
         super(TripletLossAlignedReID, self).__init__()
         self.margin = margin
         self.ranking_loss = nn.MarginRankingLoss(margin=margin)
         self.ranking_loss_local = nn.MarginRankingLoss(margin=margin)
+        self.mutual = mutual_flag
 
     def forward(self, inputs, targets, local_features):
         """
@@ -160,6 +161,8 @@ class TripletLossAlignedReID(nn.Module):
         y = torch.ones_like(dist_an)
         global_loss = self.ranking_loss(dist_an, dist_ap, y)
         local_loss = self.ranking_loss_local(local_dist_an,local_dist_ap, y)
+        if self.mutual:
+            return global_loss+local_loss,dist
         return global_loss,local_loss
 
 class CenterLoss(nn.Module):
@@ -227,18 +230,31 @@ class RingLoss(nn.Module):
 class KLMutualLoss(nn.Module):
     def __init__(self):
         super(KLMutualLoss,self).__init__()
-        self.kl_loss = nn.KLDivLoss()
+        self.kl_loss = nn.KLDivLoss(size_average=False)
         self.log_softmax = nn.functional.log_softmax
         self.softmax = nn.functional.softmax
     def forward(self, pred1, pred2):
-        pred1 = self.log_softmax(pred1)
-        pred2 = self.softmax(pred2)
-        loss = self.kl_loss(pred1, torch.autograd.Variable(pred2.data))
+        pred1 = self.log_softmax(pred1, dim=1)
+        pred2 = self.softmax(pred2, dim=1)
+        #loss = self.kl_loss(pred1, torch.autograd.Variable(pred2.data))
         loss = self.kl_loss(pred1, pred2.detach())
         # from IPython import embed
         # embed()
-        # print(loss)
+        #print(loss)
         return loss
+
+class MetricMutualLoss(nn.Module):
+    def __init__(self):
+        super(MetricMutualLoss, self).__init__()
+        self.l2_loss = nn.MSELoss()
+
+    def forward(self, dist1, dist2,pids):
+        loss = self.l2_loss(dist1, dist2)
+        # from IPython import embed
+        # embed()
+        print(loss)
+        return loss
+
 
 if __name__ == '__main__':
     pass

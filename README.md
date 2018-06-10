@@ -19,6 +19,7 @@ Official Reproduce AlignedReID: Surpassing Human-Level Performance in Person Re-
 | Resnet50 | 25.05 | AlignedReID                | Global |87.5/72.5 |89.0/84.7|
 | Resnet50 | 25.05 | AlignedReID                | Local  |87.5/71.9 |89.6/84.9|
 | Resnet50 | 25.05 | AlignedReID                | Global+Local  |88.4/73.2 |90.2/85.5|
+| Resnet50 | 25.05 | AlignedReID(Mutual)        | Global |88.2/73.1 |89.5.2/84.7|
 
 
 # Prepare data
