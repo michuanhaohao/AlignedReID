@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 class HorizontalMaxPool2d(nn.Module):
-    def __init__(self, sz=None):
+    def __init__(self):
         super(HorizontalMaxPool2d, self).__init__()
 
 

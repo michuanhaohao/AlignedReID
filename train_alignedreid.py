@@ -22,7 +22,7 @@ from util.utils import AverageMeter, Logger, save_checkpoint
 from util.eval_metrics import evaluate
 from util.optimizers import init_optim
 from util.samplers import RandomIdentitySampler
-
+from IPython import embed
 
 
 parser = argparse.ArgumentParser(description='Train AlignedReID with cross entropy loss and triplet hard loss')
@@ -47,16 +47,16 @@ parser.add_argument('--use-metric-cuhk03', action='store_true',
 # Optimization options
 parser.add_argument('--labelsmooth', action='store_true', help="label smooth")
 parser.add_argument('--optim', type=str, default='adam', help="optimization algorithm (see optimizers.py)")
-parser.add_argument('--max-epoch', default=180, type=int,
+parser.add_argument('--max-epoch', default=300, type=int,
                     help="maximum epochs to run")
 parser.add_argument('--start-epoch', default=0, type=int,
                     help="manual epoch number (useful on restarts)")
 parser.add_argument('--train-batch', default=32, type=int,
                     help="train batch size")
 parser.add_argument('--test-batch', default=32, type=int, help="test batch size")
-parser.add_argument('--lr', '--learning-rate', default=0.0003, type=float,
+parser.add_argument('--lr', '--learning-rate', default=0.0002, type=float,
                     help="initial learning rate")
-parser.add_argument('--stepsize', default=60, type=int,
+parser.add_argument('--stepsize', default=150, type=int,
                     help="stepsize to decay learning rate (>0 means this is enabled)")
 parser.add_argument('--gamma', default=0.1, type=float,
                     help="learning rate decay")
@@ -84,6 +84,7 @@ parser.add_argument('--gpu-devices', default='0', type=str, help='gpu device ids
 parser.add_argument('--reranking',action= 'store_true', help= 'result re_ranking')
 
 parser.add_argument('--test_distance',type = str, default='global', help= 'test distance type')
+parser.add_argument('--unaligned',action= 'store_true', help= 'test local feature with unalignment')
 
 args = parser.parse_args()
 
@@ -243,7 +244,6 @@ def train(epoch, model, criterion_class, criterion_metric, optimizer, trainloade
                 global_loss, local_loss = DeepSupervision(criterion_metric, features, pids, local_features)
             else:
                 global_loss, local_loss = criterion_metric(features, pids, local_features)
-
         loss = xent_loss + global_loss + local_loss
         optimizer.zero_grad()
         loss.backward()
@@ -266,7 +266,7 @@ def train(epoch, model, criterion_class, criterion_metric, optimizer, trainloade
                   'LLoss {local_loss.val:.4f} ({local_loss.avg:.4f})\t'.format(
                    epoch+1, batch_idx+1, len(trainloader), batch_time=batch_time,data_time=data_time,
                    loss=losses,xent_loss=xent_losses, global_loss=global_losses, local_loss = local_losses))
-from IPython import embed
+
 def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
     batch_time = AverageMeter()
 
@@ -332,7 +332,7 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
         from util.distance import low_memory_local_dist
         lqf = lqf.permute(0,2,1)
         lgf = lgf.permute(0,2,1)
-        local_distmat = low_memory_local_dist(lqf.numpy(),lgf.numpy())
+        local_distmat = low_memory_local_dist(lqf.numpy(),lgf.numpy(),aligned= not args.unaligned)
         if args.test_distance== 'local':
             print("Only using local branch")
             distmat = local_distmat
@@ -355,8 +355,8 @@ def test(model, queryloader, galleryloader, use_gpu, ranks=[1, 5, 10, 20]):
             print("Only using global branch for reranking")
             distmat = re_ranking(qf,gf,k1=20, k2=6, lambda_value=0.3)
         else:
-            local_qq_distmat = low_memory_local_dist(lqf.numpy(), lqf.numpy())
-            local_gg_distmat = low_memory_local_dist(lgf.numpy(), lgf.numpy())
+            local_qq_distmat = low_memory_local_dist(lqf.numpy(), lqf.numpy(),aligned= not args.unaligned)
+            local_gg_distmat = low_memory_local_dist(lgf.numpy(), lgf.numpy(),aligned= not args.unaligned)
             local_dist = np.concatenate(
                 [np.concatenate([local_qq_distmat, local_distmat], axis=1),
                  np.concatenate([local_distmat.T, local_gg_distmat], axis=1)],

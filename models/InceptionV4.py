@@ -6,6 +6,7 @@ from torch.nn import functional as F
 import torch.utils.model_zoo as model_zoo
 import os
 import sys
+from aligned.HorizontalMaxPool2D import HorizontalMaxPool2d
 
 __all__ = ['InceptionV4ReID']
 
@@ -341,27 +342,44 @@ def inceptionv4(num_classes=1000, pretrained='imagenet'):
     return model
 
 class InceptionV4ReID(nn.Module):
-    def __init__(self, num_classes, loss={'softmax'}, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, aligned=False, **kwargs):
         super(InceptionV4ReID, self).__init__()
         self.loss = loss
         base = inceptionv4()
         self.features = base.features
         self.classifier = nn.Linear(1536, num_classes)
         self.feat_dim = 1536 # feature dimension
+        self.aligned = aligned
+        self.horizon_pool = HorizontalMaxPool2d()
+        if self.aligned:
+            self.bn = nn.BatchNorm2d(1536)
+            self.relu = nn.ReLU(inplace=True)
+            self.conv1 = nn.Conv2d(1536, 128, kernel_size=1, stride=1, padding=0, bias=True)
 
     def forward(self, x):
         x = self.features(x)
+        if not self.training:
+            lf = self.horizon_pool(x)
+        if self.aligned:
+            lf = self.bn(x)
+            lf = self.relu(lf)
+            lf = self.horizon_pool(lf)
+            lf = self.conv1(lf)
+        if self.aligned or not self.training:
+            lf = lf.view(lf.size()[0:3])
+            lf = lf / torch.pow(lf, 2).sum(dim=1, keepdim=True).clamp(min=1e-12).sqrt()
         x = F.avg_pool2d(x, x.size()[2:])
         f = x.view(x.size(0), -1)
         if not self.training:
-            return f
+            return f, lf
         y = self.classifier(f)
-
         if self.loss == {'softmax'}:
             return y
         elif self.loss == {'metric'}:
+            if self.aligned: return f, lf
             return f
         elif self.loss == {'softmax', 'metric'}:
+            if self.aligned: return y, f, lf
             return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

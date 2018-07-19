@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 import torchvision
+from aligned.HorizontalMaxPool2D import HorizontalMaxPool2d
 
 __all__ = ['ShuffleNet']
 
@@ -67,7 +68,7 @@ class ShuffleNet(nn.Module):
     Zhang et al. ShuffleNet: An Extremely Efficient Convolutional Neural
     Network for Mobile Devices. CVPR 2018.
     """
-    def __init__(self, num_classes, loss={'softmax'}, num_groups=3, **kwargs):
+    def __init__(self, num_classes, loss={'softmax'}, num_groups=3, aligned=False, **kwargs):
         super(ShuffleNet, self).__init__()
         self.loss = loss
 
@@ -105,25 +106,31 @@ class ShuffleNet(nn.Module):
 
         self.classifier = nn.Linear(cfg[num_groups][2], num_classes)
         self.feat_dim = cfg[num_groups][2]
+        self.aligned = aligned
+        self.horizon_pool = HorizontalMaxPool2d()
+
+
 
     def forward(self, x):
         x = self.conv1(x)
         x = self.stage2(x)
         x = self.stage3(x)
         x = self.stage4(x)
-        x = F.avg_pool2d(x, x.size()[2:]).view(x.size(0), -1)
-
+        if self.aligned or not self.training:
+            lf = self.horizon_pool(x)
+            lf = lf.view(lf.size()[0:3])
+            lf = lf / torch.pow(lf, 2).sum(dim=1, keepdim=True).clamp(min=1e-12).sqrt()
+        f = F.avg_pool2d(x, x.size()[2:]).view(x.size(0), -1)
         if not self.training:
-            return x
-
-        y = self.classifier(x)
-
-
+            return f, lf
+        y = self.classifier(f)
         if self.loss == {'softmax'}:
             return y
         elif self.loss == {'metric'}:
-            return x
+            if self.aligned: return f, lf
+            return f
         elif self.loss == {'softmax', 'metric'}:
-            return y, x
+            if self.aligned: return y, f, lf
+            return y, f
         else:
             raise KeyError("Unsupported loss: {}".format(self.loss))

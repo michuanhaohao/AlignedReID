@@ -98,7 +98,7 @@ class TripletLoss(nn.Module):
             targets: ground truth labels with shape (num_classes)
         """
         n = inputs.size(0)
-        #inputs = 1. * inputs / (torch.norm(inputs, 2, dim=-1, keepdim=True).expand_as(inputs) + 1e-12)
+        # inputs = 1. * inputs / (torch.norm(inputs, 2, dim=-1, keepdim=True).expand_as(inputs) + 1e-12)
         # Compute pairwise distance, replace by the official when merged
         dist = torch.pow(inputs, 2).sum(dim=1, keepdim=True).expand(n, n)
         dist = dist + dist.t()
@@ -157,6 +157,7 @@ class TripletLossAlignedReID(nn.Module):
         n_local_features = local_features[n_inds]
         local_dist_ap = batch_local_dist(local_features, p_local_features)
         local_dist_an = batch_local_dist(local_features, n_local_features)
+
         # Compute ranking hinge loss
         y = torch.ones_like(dist_an)
         global_loss = self.ranking_loss(dist_an, dist_ap, y)
