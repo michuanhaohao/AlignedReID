@@ -65,14 +65,14 @@ python Alignedreid_demo.py
 
 #### Market1501-Partial
 | Model |  Loss | Global | Local | DMLI | 
-| :--- :| :---: | :---: | :---: | :---: |
+| --- | :---: | :---: | :---: | :---: | 
 | Resnet50 | Softmax | 59.0/46.4 | 56.5/43.7 | 63.3/50.0 | 
 | Resnet50 | Softmax+TriHard | 62.4/49.7 | 51.8/37.6 | 68.0/52.7 |
 | Resnet50 | Alignedreid | 65.9/53.5 | 52.8/38.1 | 70.1/55.3 | 
 
 #### DukeMTMCReID-Partial
 | Model |  Loss | Global | Local | DMLI | 
-| :--- :| :---: | :---: | :---: | :---: |
+| --- | :---: | :---: | :---: | :---: | 
 | Resnet50 | Softmax | 45.9/34.7 | 48.6/36.1 | 53.6/40.6 | 
 | Resnet50 | Softmax+TriHard | 47.8/36.4 | 43.3/31.5 | 53.7/40.5 |
 | Resnet50 | Alignedreid | 49.8/38.2 | 44.8/33.3 | 55.3/42.8 | 
