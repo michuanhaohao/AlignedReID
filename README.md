@@ -26,8 +26,8 @@ torchvision0.2.1
 Now, we support ResNet, ShuffleNet, DenseNet and InceptionV4.
 
 ## Demo
-<img src='imgs/Figure_1.png' align="right" width=400>
-<img src='imgs/Figure_0.png' align="left" width=400>
+<img src='imgs/Figure_1.png' align="right" width=430>
+<img src='imgs/Figure_0.png' align="left" width=430>
 
 
 
