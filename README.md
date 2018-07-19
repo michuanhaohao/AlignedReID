@@ -26,8 +26,8 @@ torchvision0.2.1
 Now, we support ResNet, ShuffleNet, DenseNet and InceptionV4.
 
 ## Demo
-<img src='imgs/Figure_1.png' align="right" width=400>
-<img src='imgs/Figure_0.png' align="left" width=400>
+<img src='imgs/Figure_1.png' align="right" width=410>
+<img src='imgs/Figure_0.png' align="left" width=410>
 
 <br><br><br>
 
@@ -40,25 +40,25 @@ python Alignedreid_demo.py
 
 #### Market1501
 | Model |  Loss | Global | Local | DMLI | Global+DMLI | Global+DMLI(RK) |Download|
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Resnet50 | Alignedreid | 89.2/75.9 | 90.7/75.5 | 91.1/77.4 | 91.0/77.6 | 92.0/88.5 | [model](https://pan.baidu.com/s/1Zbx_K2Cm1cgUUTNYJRImMA) |
 | Resnet50 | Alignedreid(LS) | 90.6/77.7 | 91.4/76.7 | 91.9/78.8 | 91.8/79.1 | 92.8/89.4 | [model](https://pan.baidu.com/s/12JHXjGMzdEv6BsNhpeMYbQ) |
 
 #### DukeMTMCReID
 || Model |  Loss | Global | Local | DMLI | Global+DMLI | Global+DMLI(RK) |Download|
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Resnet50 | Alignedreid | 79.3/65.6 | 80.9/66.9 | 81.0/67.7 | 80.7/68.0 |  85.2/81.2  |[model](https://pan.baidu.com/s/1RJg7cU1QKdGKJsndJU3dlA)|
 | Resnet50 | Alignedreid(LS) | 81.2/67.4 | 81.5/68.4 | 81.8/69.4 | 82.1/69.7 | 86.2/82.8 |[model](https://pan.baidu.com/s/1CW-ii3lpYnlX7n-JppliVw) |
 
 #### CUHK03
 || Model |  Loss | Global | Local | DMLI | Global+DMLI | Global+DMLI(RK) |Download|
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Resnet50 | Alignedreid | 60.7/58.4 | 60.2/58.2 | 60.9/59.6 | 60.9/59.7 | 67.6/70.7 |[model](https://pan.baidu.com/s/1YI8gs_SnoKfWnQyU-HrK8g)|
 | Resnet50 | Alignedreid(LS) | 59.7/58.1 | 59.9/57.2 | 61.1/59.4 | 61.5/59.6 | 67.9/70.7 |[model](https://pan.baidu.com/s/1AVxGRBhucNUfUYTeIXyP9A) |
 
 #### MSMT17
 || Model |  Loss | Global | Local | DMLI | Global+DMLI |Download|
-| --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | 
 | Resnet50 | Alignedreid | 63.4/38.4 | - | - | 66.3/40.6 |[model](https://pan.baidu.com/s/1E7rV4PCDoDmAIWjwBnclwg)|
 | Resnet50 | Alignedreid(LS) | - | -| 69.6/43.3 | 69.8/43.7 |[model](https://pan.baidu.com/s/1D46g8D_OvnUfu43cWKK83Q) |
 
