@@ -26,17 +26,17 @@ torchvision0.2.1
 Now, we support ResNet, ShuffleNet, DenseNet and InceptionV4.
 
 ## Demo
-<img src='imgs/Figure_1.png' align="right" width=420>
-<img src='imgs/Figure_0.png' align="left" width=420>
+<img src='imgs/Figure_1.png' align="right" width=425>
+<img src='imgs/Figure_0.png' align="left" width=425>
 
-<br><br><br>
+## Have a try
 
 Your can test the demo with your own model and datasets. You should change the path of the model and images by manually. The default model is ResNet50 for Market1501.
 ```bash
 python Alignedreid_demo.py
 ```
 
-## Results and models
+## Results (rank1/mAP)　and models
 
 #### Market1501
 | Model |  Loss | Global | Local | DMLI | Global+DMLI | Global+DMLI(RK) |Download|
@@ -59,8 +59,8 @@ python Alignedreid_demo.py
 #### MSMT17
 | Model |  Loss | Global | Local | DMLI | Global+DMLI |Download|
 | --- | :---: | :---: | :---: | :---: | :---: | :---: | 
-| Resnet50 | Alignedreid | 63.4/38.4 | - | - | 66.3/40.6 |[model](https://pan.baidu.com/s/1E7rV4PCDoDmAIWjwBnclwg)|
-| Resnet50 | Alignedreid(LS) | - | -| 69.6/43.3 | 69.8/43.7 |[model](https://pan.baidu.com/s/1D46g8D_OvnUfu43cWKK83Q) |
+| Resnet50 | Alignedreid | 63.4/38.4 | 63.8 | 66.3/40.2 | 66.3/40.6 |[model](https://pan.baidu.com/s/1E7rV4PCDoDmAIWjwBnclwg)|
+| Resnet50 | Alignedreid(LS) | 67.6/41.8 | 67.3/38.4| 69.6/43.3 | 69.8/43.7 |[model](https://pan.baidu.com/s/1D46g8D_OvnUfu43cWKK83Q) |
 
 
 #### Market1501-Partial
@@ -172,6 +172,6 @@ python train_alignedreid.py -d market1501 -a cuhk03 --evaluate --resume YOUR_MOD
 ```bash
 scp -r data/market1501 data/market1501-partial
 python gen_partial_dataset.py
-python train_alignedreid.py -d market1501 -a market1501-partial --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-market1501-partial-alignedreid --test_distance local (--unaligned)
+python train_alignedreid.py -d market1501-partial -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-market1501-partial-alignedreid --test_distance local (--unaligned)
 ```
 
