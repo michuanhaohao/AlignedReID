@@ -101,6 +101,7 @@ def main():
 
     if use_gpu:
         print("Currently using GPU {}".format(args.gpu_devices))
+        os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_devices
         cudnn.benchmark = True
         torch.cuda.manual_seed_all(args.seed)
     else:
