@@ -3,7 +3,7 @@ Alignedreid++: Dynamically Matching Local Information for Person Re-Identificati
 
 ```
 @article{luo2018alignedreid,
-  title={Alignedreid�?: Dynamically Matching Local Information for Person Re-Identification},
+  title={Alignedreid++: Dynamically Matching Local Information for Person Re-Identification},
   author={Luo, Hao and Jiang, Wei and Zhang, Xuan and Fan, Xing and Qian Jingjing and Zhang, Chi},
   year={2018}
 }
