@@ -1,9 +1,9 @@
-# AlignedReIDï¼‹+
-Alignedreidï¼‹+: Dynamically Matching Local Information for Person Re-Identification.
+# AlignedReIDï¼?
+Alignedreidï¼?: Dynamically Matching Local Information for Person Re-Identification.
 
 ```
 @article{luo2018alignedreid,
-  title={Alignedreidï¼‹+: Dynamically Matching Local Information for Person Re-Identification},
+  title={Alignedreidï¼?: Dynamically Matching Local Information for Person Re-Identification},
   author={Luo, Hao and Jiang, Wei and Zhang, Xuan and Fan, Xing and Qian Jingjing and Zhang, Chi},
   year={2018}
 }
@@ -17,7 +17,7 @@ Alignedreidï¼‹+: Dynamically Matching Local Information for Person Re-Identifica
 ```
 
 # Version
-Python2.7
+Python2/Python3
 
 torch0.4.0
 
@@ -150,19 +150,19 @@ python train_alignedreid.py  -d cuhk03 -a resnet50 --test_distance global_local 
 
 #### Global+Local(DMLI)
 ```bash
-python train_alignedreid.py -d market1501 -a cuhk03 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance global_local (--reranking)
+python train_alignedreid.-d cuhk03 -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance global_local (--reranking)
 ```
 #### Local(DMLI)
 ```bash
-python train_alignedreid.py -d market1501 -a cuhk03 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance local (--reranking)
+python train_alignedreid.py -d cuhk03 -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance local (--reranking)
 ```
 #### Local(Without DMLI)
 ```bash
-python train_alignedreid.py -d market1501 -a cuhk03 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance local --unaligned (--reranking)
+python train_alignedreid.py -d cuhk03 -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance local --unaligned (--reranking)
 ```
 #### Global
 ```bash
-python train_alignedreid.py -d market1501 -a cuhk03 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance global (--reranking)
+python train_alignedreid.py -d cuhk03 -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance global (--reranking)
 ```
 
 **Note:** (--reranking) means whether you use 'Re-ranking with k-reciprocal Encoding (CVPR2017)' to boost the performance.
