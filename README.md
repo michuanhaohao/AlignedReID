@@ -1,9 +1,9 @@
-# AlignedReIDï¼?
-Alignedreidï¼?: Dynamically Matching Local Information for Person Re-Identification.
+# AlignedReID++
+Alignedreid++: Dynamically Matching Local Information for Person Re-Identification.
 
 ```
 @article{luo2018alignedreid,
-  title={Alignedreidï¼?: Dynamically Matching Local Information for Person Re-Identification},
+  title={Alignedreidï¿½?: Dynamically Matching Local Information for Person Re-Identification},
   author={Luo, Hao and Jiang, Wei and Zhang, Xuan and Fan, Xing and Qian Jingjing and Zhang, Chi},
   year={2018}
 }
