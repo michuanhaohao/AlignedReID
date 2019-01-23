@@ -77,6 +77,7 @@ python Alignedreid_demo.py
 | Resnet50 | Softmax+TriHard | 47.8/36.4 | 43.3/31.5 | 53.7/40.5 |
 | Resnet50 | Alignedreid | 49.8/38.2 | 44.8/33.3 | 55.3/42.8 | 
 
+You can download the models on [Google Drive](https://drive.google.com/open?id=1-QApSAY51NvRcQgyUxCn8lP1sSWCeMVg).
 
 # Prepare data
 Create a directory to store reid datasets under this repo via
