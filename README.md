@@ -1,11 +1,18 @@
-# AlignedReID++
+# AlignedReID++ (Pattern Recognition)
 Alignedreid++: Dynamically Matching Local Information for Person Re-Identification.
 
+[[PDF]](https://www.sciencedirect.com/science/article/pii/S0031320319302031?via%3Dihub#!)
+
 ```
-@article{luo2018alignedreid,
-  title={Alignedreid++: Dynamically Matching Local Information for Person Re-Identification},
-  author={Luo, Hao and Jiang, Wei and Zhang, Xuan and Fan, Xing and Qian Jingjing and Zhang, Chi},
-  year={2018}
+@article{LUO2019,
+title = "AlignedReID++: Dynamically Matching Local Information for Person Re-Identification",
+journal = "Pattern Recognition",
+year = "2019",
+issn = "0031-3203",
+doi = "https://doi.org/10.1016/j.patcog.2019.05.028",
+url = "http://www.sciencedirect.com/science/article/pii/S0031320319302031",
+author = "Hao Luo and Wei Jiang and Xuan Zhang and Xing Fan and Jingjing Qian and Chi Zhang",
+keywords = "Person re-identification, CNNs, Dynamically alignment",
 }
 
 @article{zhang2017alignedreid,
