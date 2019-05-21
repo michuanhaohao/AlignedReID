@@ -1,6 +1,5 @@
 # AlignedReID++ (Pattern Recognition)
 Alignedreid++: Dynamically Matching Local Information for Person Re-Identification.
-
 [[PDF]](https://www.sciencedirect.com/science/article/pii/S0031320319302031?via%3Dihub#!)
 
 ```
@@ -33,8 +32,10 @@ torchvision0.2.1
 Now, we support ResNet, ShuffleNet, DenseNet and InceptionV4.
 
 ## Demo
-<img src='imgs/Figure_1.png' align="right" width=425>
-<img src='imgs/Figure_0.png' align="left" width=425>
+
+<img src='imgs/Figure_1.png' align="right" width=415>
+<img src='imgs/Figure_0.png' align="left" width=415>
+
 
 ## Have a try
 
