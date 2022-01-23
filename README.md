@@ -158,7 +158,7 @@ python train_alignedreid.py  -d cuhk03 -a resnet50 --test_distance global_local 
 
 #### Global+Local(DMLI)
 ```bash
-python train_alignedreid.-d cuhk03 -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance global_local (--reranking)
+python train_alignedreid.py -d cuhk03 -a resnet50 --evaluate --resume YOUR_MODEL_PATH --save-dir log/resnet50-cuhk03-alignedreid --test_distance global_local (--reranking)
 ```
 #### Local(DMLI)
 ```bash
